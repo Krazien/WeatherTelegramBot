@@ -1,9 +1,8 @@
 import sqlite3
-import time
 
 
 class DataBase:
-    def __init__(self, file='data_base/users_tg_bot.db'):  # TODO
+    def __init__(self, file='DataBase/users_tg_bot.db'):  # TODO
         self.__connection = sqlite3.connect(file, check_same_thread=False)
         self.__cursor = self.__connection.cursor()
 
@@ -40,7 +39,7 @@ class DataBase:
             CREATE TABLE IF NOT EXISTS cities(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
-                city TEXT
+                city TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (user_id)
         )
         '''
@@ -64,12 +63,20 @@ class DataBase:
         self.__cursor.execute(query_create, (user_id, message_id, text, date))
         self.__connection.commit()
 
-    def save_city(self, user_id, new_city):
+    def update_city(self, user_id, new_city):
         query_create = '''
             UPDATE cities SET city = ?
             WHERE user_id = ?
             '''
-        self.__cursor.execute(query_create, (new_city, user_id))
+        self.__cursor.execute(query_create, (user_id, new_city))
+        self.__connection.commit()
+
+    def save_city(self, user_id, new_city):
+        query_create = '''
+            INSERT OR IGNORE INTO cities (user_id, city)
+            VALUES (?, ?)
+            '''
+        self.__cursor.execute(query_create, (user_id, new_city))
         self.__connection.commit()
 
     def __del__(self):
@@ -82,5 +89,5 @@ class DataBase:
                     WHERE user_id = ?
                     '''
         self.__cursor.execute(query_create,
-                              (user_id, ))
+                              (user_id,))
         return self.__cursor.fetchall()
