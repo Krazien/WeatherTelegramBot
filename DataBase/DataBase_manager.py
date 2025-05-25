@@ -40,7 +40,8 @@ class DataBase:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 city TEXT,
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
+                FOREIGN KEY (user_id) REFERENCES users (user_id),
+                UNIQUE (user_id)
         )
         '''
         self.__cursor.execute(query_create)
@@ -68,7 +69,7 @@ class DataBase:
             UPDATE cities SET city = ?
             WHERE user_id = ?
             '''
-        self.__cursor.execute(query_create, (user_id, new_city))
+        self.__cursor.execute(query_create, (new_city, user_id))
         self.__connection.commit()
 
     def save_city(self, user_id, new_city):
